@@ -1,8 +1,10 @@
 # Effector Form
 
-Build form/input models for Effector.
+Build form and input models for Effector with helpers.
 
 ## Example
+
+model.ts
 
 ```
 import { createField, createForm } from 'effector-form';
@@ -20,6 +22,25 @@ export const authForm = createForm({
   fields: [nameField, passField],
 });
 
+```
+
+view.tsx
+
+```
+export const Input = (inputProps) => {
+  const { name, $value, $error, changed } = inputProps;
+
+  const value = useStore($value);
+  const error = useStore($error);
+
+  return (
+    <div>
+      <label>{name}</label>
+      <input onChange={changed} value={value} name={name} />
+      <div>{error && error}</div>
+    <div/>
+  );
+};
 ```
 
 ## Features
