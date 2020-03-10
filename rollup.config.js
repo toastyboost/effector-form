@@ -12,6 +12,7 @@ import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 const extensions = ['.ts', '.tsx', '.json'];
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default {
   input: 'src',
@@ -47,8 +48,8 @@ export default {
     resolve({
       extensions,
     }),
-    strip(),
+    isProduction && strip(),
     commonjs(),
-    terser(),
+    isProduction && terser(),
   ],
 };

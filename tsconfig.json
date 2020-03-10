@@ -7,20 +7,24 @@
     "isolatedModules": true,
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
     "moduleResolution": "node",
+    "module": "esnext",
     "noEmit": true,
+    "noImplicitAny": false,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
     "strict": true,
+    "skipLibCheck": true,
     "target": "es6",
     "declaration": true,
     "declarationDir": "./dist",
-    "baseUrl": "./",
-    "rootDir": "./src",
+    "baseUrl": ".",
+    "rootDirs": ["./src", "./stories"],
     "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {
+      "~/": ["./src/"]
+    }
   },
-  "exclude": ["./node_modules", "./dist"],
-  "include": ["./src"]
+  "exclude": ["./node_modules", "./dist", "./.storybook"],
+  "include": ["src", "stories"]
 }

@@ -1,27 +1,27 @@
-# 🐣 Rollup starter with Typescript
+# Effector Form
 
-[![Build Status](https://travis-ci.org/toastyboost/rollup-starter.svg?branch=master)](https://travis-ci.org/toastyboost/rollup-starter)
+Build form/input models for Effector.
 
-Build your module into a clean, typed and cross-platform package.  
-It's just works. Only key featurs.
+## Example
 
-React version — 🐣[Rollup React starter with Typescript](https://github.com/toastyboost/rollup-react-starter)
+```
+import { createField, createForm } from 'effector-form';
 
-## Usage
+export const loginField = createField({
+  name: 'login',
+});
 
-`yarn build` builds the application to `dist/`  
-`yarn lint` check for errors `src/**.ts`
+export const passField = createField({
+  name: 'pass',
+});
+
+export const authForm = createForm({
+  name: 'auth',
+  fields: [nameField, passField],
+});
+
+```
 
 ## Features
 
-- [x] 🧠Bundles CJS/ES module formats
-- [x] 👭Aliases
-- [x] 🤫Sourcemaps
-- [x] 👮‍♀️ESLint plugins (not TSLint, because it's dead)
-- [x] 🍭Prettier
-- [x] 🎱 Auto compiling types
-- [x] 🧹 Post clean
-
 ## TODO
-
-- [ ] Add article how to publish NPM package
