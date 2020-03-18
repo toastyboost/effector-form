@@ -1,7 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
-import strip from '@rollup/plugin-strip';
 
 import babel from 'rollup-plugin-babel';
 import typescript from 'rollup-plugin-typescript2';
@@ -12,7 +11,6 @@ import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 const extensions = ['.ts', '.tsx', '.json'];
-const isProduction = process.env.NODE_ENV === 'production';
 
 export default {
   input: 'src',
@@ -48,8 +46,7 @@ export default {
     resolve({
       extensions,
     }),
-    isProduction && strip(),
     commonjs(),
-    isProduction && terser(),
+    terser(),
   ],
 };

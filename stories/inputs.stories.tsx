@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
 
-import { nameField, resetForm, genderField, petsField, fruitsField } from './models'
+import { nameField, resetForm, genderField, petsField, fruitsField, catsField, dogsField } from './models'
 
 export default { title: 'Inputs' };
 
@@ -90,6 +90,36 @@ export const optionsField = () => {
   );
 };
 
+export const initialValue = () => {
+  const { name, $value, $error, changed } = dogsField;
+
+  const value = useStore($value);
+  const error = useStore($error);
+
+  return (
+    <>
+      <input onChange={changed} value={value} name={name} />
+      <button onClick={() => resetForm()}>reset</button>
+      <div>{error && error}</div>
+    </>
+  );
+};
+
+
+export const initialStore = () => {
+  const { name, $value, $error, changed } = catsField;
+
+  const value = useStore($value);
+  const error = useStore($error);
+
+  return (
+    <>
+      <input onChange={changed} value={value} name={name} />
+      <button onClick={() => resetForm()}>reset</button>
+      <div>{error && error}</div>
+    </>
+  );
+};
 
 
 

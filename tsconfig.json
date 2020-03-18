@@ -6,7 +6,11 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "jsx": "react",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "moduleResolution": "node",
     "module": "esnext",
     "noEmit": true,
@@ -18,13 +22,27 @@
     "declaration": true,
     "declarationDir": "./dist",
     "baseUrl": ".",
-    "rootDirs": ["./src", "./stories"],
+    "rootDirs": [
+      "./src",
+      "./stories"
+    ],
     "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "paths": {
-      "~/": ["./src/"]
-    }
+      "~/": [
+        "./src/"
+      ]
+    },
   },
-  "exclude": ["./node_modules", "./dist", "./.storybook"],
-  "include": ["src", "stories"]
+  "exclude": [
+    "./node_modules",
+    "./dist",
+    "./.storybook",
+    "./stories"
+  ],
+  "include": [
+    "src/",
+  ]
 }

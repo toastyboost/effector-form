@@ -12,9 +12,12 @@ node_modules
 # npm package lock
 package-lock.json
 yarn.lock
+.travis.yml
 
 # project files
 src
+lib
+stories
 storybook-static
 .babelrc
 .editorconfig
@@ -22,9 +25,7 @@ storybook-static
 .gitignore
 .prettierrc
 rollup.config.js
-
-
-
+.github
 
 
 

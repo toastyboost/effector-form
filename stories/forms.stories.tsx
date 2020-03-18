@@ -7,7 +7,7 @@ export default { title: 'Forms' };
 
 // model
 
-export const textField = () => {
+export const textFields = () => {
 
   const { $values, $errors, $isValid, $dirty, $submited } = authForm;
 

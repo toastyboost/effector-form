@@ -8,29 +8,31 @@ import {
 } from 'effector';
 
 import { FieldResult } from './createField';
+import { GroupResult } from './createGroup';
+
 import { fieldsValidator } from '../lib/validators';
 
-type FormConfig = {
+export type FormConfig = {
   name: string;
-  fields: FieldResult[];
-  submit: Event<React.FormEvent<HTMLFormElement>>;
+  fields: (FieldResult | GroupResult)[];
+  submit: Event<void>;
   reset?: Event<void>;
 };
 
-export type FormResult = {
-  $values: Store<Record<string, string>>;
+export type FormResult<V> = {
+  $values: Store<V>;
   $errors: Store<Record<string, string>>;
   $isValid: Store<boolean>;
   $dirty: Store<boolean>;
   $submited: Store<boolean>;
 };
 
-export function createForm({
+export function createForm<V>({
   name,
   fields,
   submit,
   reset = createEvent(`${name}Reset`),
-}: FormConfig): FormResult {
+}: FormConfig): FormResult<V> {
   const $dirty = createStore<boolean>(false, {
     name: `${name}Touch`,
   });
@@ -45,10 +47,10 @@ export function createForm({
   $submited.on(submit, () => true).on(reset, () => false);
   $dirty.on($dirtyFields, () => true).on(reset, () => false);
 
-  const $values: Store<Record<string, string>> = combine(
+  const $values: Store<any> = combine(
     fields.reduce(
-      (accumulator, { $value, name: fieldName }) => ({
-        ...accumulator,
+      (fields, { $value, name: fieldName }) => ({
+        ...fields,
         ...{ [fieldName]: $value },
       }),
       {},

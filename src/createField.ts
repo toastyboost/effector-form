@@ -2,7 +2,7 @@ import { createEvent, createStore, Event, Store, Unit } from 'effector';
 
 export type FieldConfig = {
   name: string;
-  initialValue?: string;
+  initialValue?: string | Store<string>;
   maxLength?: number;
   reset?: Unit<void>;
   map?: (value: string) => string;
@@ -13,7 +13,9 @@ export type FieldResult = {
   name: string;
   $value: Store<string>;
   $error: Store<string | null>;
-  changed: Event<React.ChangeEvent<HTMLInputElement | HTMLSelectElement>>;
+  changed: Event<
+    React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
+  >;
 };
 
 export function createField({
@@ -25,18 +27,22 @@ export function createField({
   validator,
 }: FieldConfig): FieldResult {
   const changed = createEvent<
-    React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
   >(`${name}Changed`);
 
-  const $source = createStore(initialValue, { name: `${name}Store` });
+  const $source =
+    typeof initialValue === 'string'
+      ? createStore(initialValue, { name: `${name}Store` })
+      : initialValue;
 
-  $source.on(reset, () => initialValue);
+  $source.on(reset, () => '');
 
   const $value = $source.map(map ?? ((a) => a));
   const $error = $source.map(validator ?? (() => null));
 
   $source.on(changed, (_, payload) => {
-    const value = payload.currentTarget.value;
+    const value =
+      typeof payload === 'string' ? payload : payload.currentTarget.value;
     return maxLength < 0 ? value : value.slice(0, length);
   });
 

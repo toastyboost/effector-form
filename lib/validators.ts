@@ -1,5 +1,6 @@
 import { combine } from 'effector';
 import { FieldResult } from '../src/createField';
+import { GroupResult } from '../src/createGroup';
 
 export const loginValidator = (login: string) => {
   if (login.length === 0) {
@@ -18,7 +19,7 @@ export const passValidator = (password: string) => {
   return null;
 };
 
-export const fieldsValidator = (fields: FieldResult[]) => {
+export const fieldsValidator = (fields: (FieldResult | GroupResult)[]) => {
   const allStores = fields.map(({ $error }) => $error);
   return combine(allStores, (all) =>
     all.every((value: string | null) => !value),
