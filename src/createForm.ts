@@ -1,10 +1,11 @@
 import {
   createEvent,
   createStore,
-  Event,
   Store,
   combine,
   merge,
+  forward,
+  Unit,
 } from 'effector';
 
 import { FieldResult } from './createField';
@@ -15,8 +16,12 @@ import { fieldsValidator } from '../lib/validators';
 export type FormConfig = {
   name: string;
   fields: (FieldResult | GroupResult)[];
-  submit: Event<void>;
-  reset?: Event<void>;
+  submit: Unit<
+    | void
+    | React.FormEvent<HTMLFormElement>
+    | React.MouseEvent<HTMLElement, MouseEvent>
+  >;
+  reset?: Unit<void | React.MouseEvent<HTMLElement, MouseEvent>>;
 };
 
 export type FormResult<V> = {
@@ -42,6 +47,7 @@ export function createForm<V>({
   });
 
   const $dirtyFields = merge(fields.map(({ changed }) => changed));
+  const resets = fields.map(({ reset }) => reset);
   const $isValid = fieldsValidator(fields);
 
   $submited.on(submit, () => true).on(reset, () => false);
@@ -66,6 +72,11 @@ export function createForm<V>({
       {},
     ),
   );
+
+  forward({
+    from: reset,
+    to: resets,
+  });
 
   return { $values, $errors, $isValid, $dirty, $submited };
 }

@@ -1,6 +1,6 @@
 # Effector Form
 
-Build form and input Effector models with helpers.
+Build Effector models for forms and inputs with helpers.
 
 [![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@master/badge/badge-storybook.svg)](https://toastyboost.github.io/effector-form/)
 
@@ -54,3 +54,4 @@ export const Input = (inputProps) => {
 ## TODO
 
 - [ ] Analyze forms libs
+- [ ] Reset Fields throue form

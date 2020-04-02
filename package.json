@@ -1,6 +1,6 @@
 {
   "name": "effector-form",
-  "version": "0.0.12",
+  "version": "0.0.15",
   "main": "./dist/common.js",
   "module": "./dist/index.js",
   "types": "./dist/src/index.d.ts",
@@ -11,7 +11,6 @@
   "scripts": {
     "build": "rm -rf dist && rollup -c",
     "lint": "eslint --ext .ts,.tsx src",
-    "publish": "yarn build && yarn publish",
     "story": "start-storybook -p 6006",
     "story-build": "build-storybook -c .storybook"
   },
@@ -49,6 +48,7 @@
     "react": "^16.11.0",
     "react-docgen-typescript-loader": "^3.6.0",
     "react-dom": "^16.11.0",
+    "react-syntax-highlighter": "^12.2.1",
     "rollup": "^1.26.2",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-eslint": "^7.0.0",
@@ -58,5 +58,8 @@
     "storybook-dark-mode": "^0.2.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "effector-form": "^0.0.14"
   }
 }
