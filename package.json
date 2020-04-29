@@ -1,9 +1,9 @@
 {
   "name": "effector-form",
-  "version": "0.0.15",
+  "version": "0.0.33",
   "main": "./dist/common.js",
   "module": "./dist/index.js",
-  "types": "./dist/src/index.d.ts",
+  "types": "./dist",
   "license": "MIT",
   "files": [
     "dist"

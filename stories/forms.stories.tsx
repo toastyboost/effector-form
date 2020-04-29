@@ -2,8 +2,8 @@ import * as React from 'react';
 import { createEvent } from 'effector'
 import { useStore } from 'effector-react';
 
-import { createField, createForm } from '../src';
-import { loginValidator, passValidator } from '../lib/validators';
+import { createInput, createForm } from '../src';
+import { loginValidator, passValidator } from '../src/lib/validators';
 
 import '../.storybook/styles/default.css';
 
@@ -16,15 +16,15 @@ type AuthResult = {
 
 // model
 
-const submitForm = createEvent<React.FormEvent<HTMLFormElement>>();
-const resetForm = createEvent<void | React.MouseEvent<HTMLElement, MouseEvent>>();
+const submitForm = createEvent<void>();
+const resetForm = createEvent<void>();
 
-const nameField = createField({
+const nameField = createInput({
   name: 'login',
   validator: loginValidator,
 });
 
-const passField = createField({
+const passField = createInput({
   name: 'password',
   validator: passValidator,
 });
@@ -54,16 +54,24 @@ export const textFields = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    submitForm(e)
+    submitForm()
+  }
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    nameField.changed(e.currentTarget.value)
+  }
+
+  const handlePassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    passField.changed(e.currentTarget.value)
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input onChange={nameField.changed} value={nameValue} name={nameField.name} />
-        <input onChange={passField.changed} value={passValue} name={passField.name} />
+      <form onSubmit={(e) => handleSubmit(e)}>
+        <input onChange={handleNameChange} value={nameValue} name={nameField.name} />
+        <input onChange={handlePassChange} value={passValue} name={passField.name} />
         <button type="submit" data-type="primary">Login</button>
-        <button onClick={resetForm} data-type="danger">Reset</button>
+        <button onClick={() => resetForm()} data-type="danger">Reset</button>
       </form>
       <div className="container">
         <div>Values:</div>
@@ -81,19 +89,19 @@ export const textFields = () => {
   );
 };
 
-const massResetForm = createEvent<void | React.MouseEvent<HTMLElement, MouseEvent>>();
+const massResetForm = createEvent<void>();
 
-const fieldOne = createField({
+const fieldOne = createInput({
   name: 'fieldOne',
   initialValue: '1'
 });
 
-const fieldTwo = createField({
+const fieldTwo = createInput({
   name: 'fieldTwo',
   initialValue: '2'
 });
 
-const fieldThree = createField({
+const fieldThree = createInput({
   name: 'fieldThree',
   initialValue: '3'
 });
@@ -105,20 +113,43 @@ const massForm = createForm({
   reset: massResetForm,
 });
 
-
 export const massReset = () => {
 
   const fieldOneValue = useStore(fieldOne.$value);
   const fieldTwoValue = useStore(fieldTwo.$value);
   const fieldThreeValue = useStore(fieldThree.$value);
 
+  const { $values, $errors, } = massForm;
+
+  const values = useStore($values);
+  const errors = useStore($errors);
+
+  const handleFieldValueOne = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldOne.changed(e.currentTarget.value)
+  }
+
+  const handleFieldValueTwo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldTwo.changed(e.currentTarget.value)
+  }
+
+  const handleFieldValueThree = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldThree.changed(e.currentTarget.value)
+  }
+
   return (
     <>
       <div>
-        <input onChange={fieldOne.changed} value={fieldOneValue} name={fieldOne.name} />
-        <input onChange={fieldTwo.changed} value={fieldTwoValue} name={fieldTwo.name} />
-        <input onChange={fieldThree.changed} value={fieldThreeValue} name={fieldThree.name} />
-        <button onClick={massResetForm} data-type="danger">Reset</button>
+        <input onChange={handleFieldValueOne} value={fieldOneValue} name={fieldOne.name} />
+        <input onChange={handleFieldValueTwo} value={fieldTwoValue} name={fieldTwo.name} />
+        <input onChange={handleFieldValueThree} value={fieldThreeValue} name={fieldThree.name} />
+        <button onClick={() => massResetForm()} data-type="danger">Reset</button>
+        <div className="container">
+          <div>Values:</div>
+          {JSON.stringify(values)}
+          <div>Errors:</div>
+          {JSON.stringify(errors)}
+          <div>Other:</div>
+        </div>
       </div>
     </>
   );

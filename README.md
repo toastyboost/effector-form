@@ -47,11 +47,15 @@ export const Input = (inputProps) => {
 
 ## Features
 
-- createField
-- createGroup
-- createForm
+- createInput - create input filed
+- createGroup - create checkbox field
+- createField - create custom fields
+- createForm - create form
 
 ## TODO
 
+- [ ] Add generics to field types
+- [ ] Add custom_data fields (boolean, object)
+- [ ] Handle stores in fieldsValidator
 - [ ] Analyze forms libs
 - [ ] Reset Fields throue form

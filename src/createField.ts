@@ -1,50 +1,54 @@
-import { createEvent, createStore, Event, Store, Unit, is } from 'effector';
+import {
+  createEvent,
+  createStore,
+  sample,
+  Event,
+  Store,
+  Unit,
+  is,
+} from 'effector';
 
-export type FieldConfig = {
+export type FieldConfig<T> = {
   name: string;
-  initialValue?: string | Store<string>;
-  length?: number;
-  reset?: Unit<void | React.MouseEvent<HTMLElement, MouseEvent>>;
-  map?: (value: string) => string;
-  validator?: (value: string) => string | null;
+  initialValue: T | Store<T>;
+  reset?: Unit<void>;
+  map?: (value: T) => T;
+  validator?: (value: T) => T | null;
 };
 
-export type FieldResult = {
+export type FieldResult<T> = {
   name: string;
-  $value: Store<string>;
-  $error: Store<string | null>;
-  changed: Event<
-    React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
-  >;
-  reset: Unit<void | React.MouseEvent<HTMLElement, MouseEvent>>;
+  $value: Store<T>;
+  $error: Store<T | null>;
+  changed: Event<T>;
+  reset: Unit<void>;
 };
 
-export function createField({
+export function createField<T>({
   name,
-  initialValue = '',
+  initialValue,
   reset = createEvent(`${name}Reset`),
   map,
-  length = -1,
   validator,
-}: FieldConfig): FieldResult {
-  const changed = createEvent<
-    React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
-  >(`${name}Changed`);
+}: FieldConfig<T>): FieldResult<T> {
+  const changed = createEvent<T>(`${name}Changed`);
 
-  const $source = is.unit(initialValue)
+  const $initialValue = is.unit(initialValue)
     ? initialValue
     : createStore(initialValue, { name: `${name}Store` });
 
-  $source.on(reset, () => '');
+  const $source = sample($initialValue);
 
   const $value = $source.map(map ?? ((a) => a));
   const $error = $source.map(validator ?? (() => null));
 
-  $source.on(changed, (_, payload) => {
-    const value =
-      typeof payload === 'string' ? payload : payload.currentTarget.value;
-    return length < 0 ? value : value.slice(0, length);
+  sample({
+    source: $initialValue,
+    clock: reset,
+    target: $source,
   });
+
+  $source.on(changed, (state, payload) => payload);
 
   return { name, $value, $error, changed, reset };
 }

@@ -8,36 +8,33 @@ import {
   Unit,
 } from 'effector';
 
-import { FieldResult } from './createField';
+import { InputResult } from './createInput';
 import { GroupResult } from './createGroup';
+import { FieldResult } from './createField';
 
-import { fieldsValidator } from '../lib/validators';
+import { fieldsValidator } from './lib/validators';
 
-export type FormConfig = {
+export type FormConfig<T> = {
   name: string;
-  fields: (FieldResult | GroupResult)[];
-  submit: Unit<
-    | void
-    | React.FormEvent<HTMLFormElement>
-    | React.MouseEvent<HTMLElement, MouseEvent>
-  >;
-  reset?: Unit<void | React.MouseEvent<HTMLElement, MouseEvent>>;
+  fields: (InputResult | GroupResult | FieldResult<any>)[];
+  submit: Unit<void>;
+  reset?: Unit<void>;
 };
 
-export type FormResult<V> = {
-  $values: Store<V>;
-  $errors: Store<Record<string, string>>;
+export type FormResult<T> = {
+  $values: Store<{ [K in keyof T]: T[K] extends Store<infer U> ? U : T[K] }>;
+  $errors: Store<{ [K in keyof T]: T[K] extends Store<infer U> ? U : T[K] }>;
   $isValid: Store<boolean>;
   $dirty: Store<boolean>;
   $submited: Store<boolean>;
 };
 
-export function createForm<V>({
+export function createForm<T>({
   name,
   fields,
   submit,
   reset = createEvent(`${name}Reset`),
-}: FormConfig): FormResult<V> {
+}: FormConfig<T>): FormResult<T> {
   const $dirty = createStore<boolean>(false, {
     name: `${name}Touch`,
   });
@@ -47,29 +44,30 @@ export function createForm<V>({
   });
 
   const $dirtyFields = merge(fields.map(({ changed }) => changed));
+
   const resets = fields.map(({ reset }) => reset);
   const $isValid = fieldsValidator(fields);
 
   $submited.on(submit, () => true).on(reset, () => false);
   $dirty.on($dirtyFields, () => true).on(reset, () => false);
 
-  const $values: Store<any> = combine(
+  const $values = combine(
     fields.reduce(
       (fields, { $value, name: fieldName }) => ({
         ...fields,
-        ...{ [fieldName]: $value },
+        [fieldName]: $value,
       }),
-      {},
+      {} as T,
     ),
   );
 
-  const $errors: Store<Record<string, string>> = combine(
+  const $errors = combine(
     fields.reduce(
       (accumulator, { $error, name: fieldName }) => ({
         ...accumulator,
-        ...{ [fieldName]: $error },
+        [fieldName]: $error,
       }),
-      {},
+      {} as T,
     ),
   );
 
