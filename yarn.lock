@@ -4105,6 +4105,13 @@ effector-form@^0.0.14:
   resolved "https://registry.yarnpkg.com/effector-form/-/effector-form-0.0.14.tgz#08b0b17b234e4fef2e5f45b4947e8fb88844bb38"
   integrity sha512-87vhqEMNqkmuLaST2Iq6gVQS6/Fh7bp7XM1ThyoPfnnt9/agYjz2Mq5+8iB19zyag9HbdafPmWIx3/dlV4yYjA==
 
+effector-form@^0.0.34:
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/effector-form/-/effector-form-0.0.34.tgz#49caf3163feb282986c55c002433f79f20a71ccf"
+  integrity sha512-7tWoeRZnP1AiZtpBwKa0W+J7tCpSljrsig6phZE5+rKkZkosEhLjZvAwBCblkAAI5NXhuu/m9MhsLGH1CWzAmQ==
+  dependencies:
+    effector-form "^0.0.14"
+
 effector-react@^20.6.2:
   version "20.6.3"
   resolved "https://registry.yarnpkg.com/effector-react/-/effector-react-20.6.3.tgz#f276a3478886b3be487cc1e1bc4ab29938b6af4e"

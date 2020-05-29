@@ -12,6 +12,7 @@ export type GroupResult = {
   name: string;
   $value: Store<string[]>;
   $error: Store<string | null>;
+  $isTouched: Store<boolean>;
   changed: Event<string>;
   reset: Unit<void>;
 };
@@ -25,6 +26,7 @@ export function createGroup({
 }: GroupConfig): GroupResult {
   const changed = createEvent<string>(`${name}Changed`);
 
+  const $isTouched = createStore(false, { name: `${name}Touched` });
   const $source = is.unit(initialValue)
     ? initialValue
     : createStore(initialValue, { name: `${name}Store` });
@@ -33,6 +35,8 @@ export function createGroup({
 
   const $value = $source.map(map ?? ((a) => a));
   const $error = $source.map(validator ?? (() => null));
+
+  $isTouched.on(changed, () => true);
 
   $source.on(changed, (state, payload) => {
     const index = state.indexOf(payload);
@@ -43,5 +47,5 @@ export function createGroup({
     return [...state, payload];
   });
 
-  return { name, $value, $error, changed, reset };
+  return { name, $value, $error, $isTouched, changed, reset };
 }

@@ -13,6 +13,7 @@ export type InputResult = {
   name: string;
   $value: Store<string>;
   $error: Store<string | null>;
+  $isTouched: Store<boolean>;
   changed: Event<string>;
   reset: Unit<void>;
 };
@@ -26,6 +27,7 @@ export function createInput({
   validator,
 }: InputConfig): InputResult {
   const changed = createEvent<string>(`${name}Changed`);
+  const $isTouched = createStore(false, { name: `${name}Touched` });
 
   const $source = is.unit(initialValue)
     ? initialValue
@@ -34,6 +36,7 @@ export function createInput({
   const $value = $source.map(map ?? ((a) => a));
   const $error = $source.map(validator ?? (() => null));
 
+  $isTouched.on(changed, () => true);
   $source.on(reset, () => '');
 
   $source.on(changed, (_, payload) => {
@@ -44,5 +47,5 @@ export function createInput({
     return payload;
   });
 
-  return { name, $value, $error, changed, reset };
+  return { name, $value, $error, $isTouched, changed, reset };
 }

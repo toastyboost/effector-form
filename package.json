@@ -1,6 +1,6 @@
 {
   "name": "effector-form",
-  "version": "0.0.33",
+  "version": "0.0.35",
   "main": "./dist/common.js",
   "module": "./dist/index.js",
   "types": "./dist",
@@ -60,6 +60,6 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "effector-form": "^0.0.14"
+    "effector-form": "^0.0.34"
   }
 }

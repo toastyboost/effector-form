@@ -20,6 +20,7 @@ export type FieldResult<T> = {
   name: string;
   $value: Store<T>;
   $error: Store<T | null>;
+  $isTouched: Store<boolean>;
   changed: Event<T>;
   reset: Unit<void>;
 };
@@ -32,6 +33,7 @@ export function createField<T>({
   validator,
 }: FieldConfig<T>): FieldResult<T> {
   const changed = createEvent<T>(`${name}Changed`);
+  const $isTouched = createStore(false, { name: `${name}Touched` });
 
   const $initialValue = is.unit(initialValue)
     ? initialValue
@@ -48,7 +50,8 @@ export function createField<T>({
     target: $source,
   });
 
+  $isTouched.on(changed, () => true);
   $source.on(changed, (state, payload) => payload);
 
-  return { name, $value, $error, changed, reset };
+  return { name, $value, $error, $isTouched, changed, reset };
 }

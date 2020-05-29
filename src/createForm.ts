@@ -46,6 +46,7 @@ export function createForm<T>({
   const $dirtyFields = merge(fields.map(({ changed }) => changed));
 
   const resets = fields.map(({ reset }) => reset);
+  const $isTouched = fields.map(({ $isTouched }) => $isTouched);
   const $isValid = fieldsValidator(fields);
 
   $submited.on(submit, () => true).on(reset, () => false);
@@ -74,6 +75,11 @@ export function createForm<T>({
   forward({
     from: reset,
     to: resets,
+  });
+
+  forward({
+    from: $submited,
+    to: $isTouched,
   });
 
   return { $values, $errors, $isValid, $dirty, $submited };
