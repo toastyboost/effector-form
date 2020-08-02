@@ -51,7 +51,7 @@ export function createField<T>({
   });
 
   $isTouched.on(changed, () => true);
-  $source.on(changed, (state, payload) => payload);
+  $source.on(changed, (_state, payload) => payload);
 
   return { name, $value, $error, $isTouched, changed, reset };
 }
