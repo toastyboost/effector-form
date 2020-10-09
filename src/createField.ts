@@ -1,77 +1,57 @@
-import { createEvent, createStore, sample, is, Store, Event } from 'effector';
+import { createEvent, createStore, Store, Event } from 'effector';
 
-type Primitives = null | boolean | string | number | undefined;
-
-export type FieldConfig = {
-  name: string;
-  length?: number;
-  initial?: Primitives | Primitives[];
-  reset: Event<void>;
-  validator?: (value: Primitives) => string | null;
-  map?: (value: Primitives) => Primitives;
+export type Field<T> = {
+  name?: string;
+  initial: T;
+  onReset?: Event<T | void>;
+  onValidate?: (value: T) => string | null;
+  map?: (value: T) => T;
+  config: object;
 };
 
-export type FieldResult = {
+export type FieldResult<T> = {
   name: string;
-  $value: Store<Primitives>;
+  $value: Store<T>;
   $error: Store<string | null>;
   $touched: Store<boolean>;
-  changed: Event<Primitives>;
-  reset: Event<void>;
+  onChange: Event<T>;
+  onReset: Event<T | void>;
+  config: object;
 };
 
-export const createField = ({
-  name,
-  length,
-  validator,
+export const createField = <T>({
+  name = 'Field',
   initial,
-  reset = createEvent(`${name}Reset`),
+  onValidate,
+  onReset = createEvent(`${name}Reset`),
   map,
-}: FieldConfig): FieldResult => {
-  const changed = createEvent<Primitives>(`${name}Changed`);
+  config,
+}: Field<T>): FieldResult<T> => {
+  const onChange = createEvent<T>(`${name}Changed`);
+
   const $touched = createStore<boolean>(false, { name: `${name}Touched` });
+  const $initial = createStore<T>(initial, {
+    name: `${name}Store`,
+  });
 
-  const $initial = is.store(initial)
-    ? initial
-    : createStore<Primitives | Primitives[]>(initial, { name: `${name}Store` });
+  const $source = $initial.on(onReset, (_, payload) => {
+    if (payload) return payload;
+    return initial;
+  });
 
-  const $source = sample($initial);
   const $value = $source.map(map ?? ((a) => a));
-  const $error = $source.map(validator ?? (() => null));
+  const $error = $source.map(onValidate ?? (() => null));
 
-  $touched.on(changed, () => true);
-
-  $source.on(reset, (_, value) => (Array.isArray(value) ? [] : ''));
-  $source.on(changed, (state, value) => {
-    if (Array.isArray(value)) {
-      const index = state.indexOf(value);
-
-      if (index > -1) {
-        return state.filter((selected: Primitives) => selected !== value);
-      }
-
-      return [...state, value];
-    } else {
-      if (typeof value === 'string' && length) {
-        return value.slice(0, length);
-      }
-
-      return value;
-    }
-  });
-
-  sample({
-    source: $initial,
-    clock: reset,
-    target: $source,
-  });
+  $touched.on(onChange, () => true);
+  $source.on(onChange, (_, value) => value);
 
   return {
     name,
     $value,
     $error,
     $touched,
-    changed,
-    reset,
+    onChange,
+    onReset,
+    config,
   };
 };
