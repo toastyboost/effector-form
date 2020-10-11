@@ -6,17 +6,19 @@ export type Field<T> = {
   onReset?: Event<T | void>;
   onValidate?: (value: T) => string | null;
   map?: (value: T) => T;
-  config: object;
+  // how to use infer here
+  config: T;
 };
 
-export type FieldResult<T> = {
+export type FieldResult<T, C = any> = {
   name: string;
   $value: Store<T>;
   $error: Store<string | null>;
   $touched: Store<boolean>;
   onChange: Event<T>;
   onReset: Event<T | void>;
-  config: object;
+
+  config: C;
 };
 
 export const createField = <T>({

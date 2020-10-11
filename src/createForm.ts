@@ -10,6 +10,7 @@ import {
 
 import { createField, Field, FieldResult } from './createField';
 import { getKeys } from './lib/validators';
+
 type Fields<Context> = {
   [P in keyof Context]: Field<Context[keyof Context]>;
 };
@@ -54,16 +55,16 @@ export const createForm = <T>({
   }, {} as FieldsResult<T>);
 
   const $values = (combine(
-    Object.keys($fields).reduce(
+    getKeys($fields).reduce(
       (acc, fieldName) => ({
         ...acc,
         [fieldName]: $fields[fieldName].$value,
       }),
-      {},
+      {} as T,
     ),
   ) as unknown) as Store<T>;
 
-  const $errors = combine(
+  const $errors = (combine(
     getKeys($fields).reduce(
       (acc, fieldName) => ({
         ...acc,
@@ -71,18 +72,23 @@ export const createForm = <T>({
       }),
       {} as Errors<T>,
     ),
-  );
+  ) as unknown) as Store<Errors<T>>;
 
   const $touchedFields = merge(
-    Object.keys($fields).map((fieldName) => $fields[fieldName].$touched),
+    getKeys($fields).map((fieldName) => $fields[fieldName].$touched),
   );
 
   const $dirtyFields = merge(
-    Object.keys($fields).map((fieldName) => $fields[fieldName].changed),
+    getKeys($fields).map((fieldName) => $fields[fieldName].onChange),
   );
 
-  const $validFields = Object.keys($fields).map(
+  const $validFields = getKeys($fields).map(
     (fieldName) => $fields[fieldName].$error,
+  );
+
+  // cant use getKeys here
+  const fieldsResets = Object.keys($fields).map(
+    (fieldName) => $fields[fieldName].onReset,
   );
 
   const $valid = combine($validFields, (all) => all.every((e) => !e));
@@ -102,10 +108,6 @@ export const createForm = <T>({
   $submited.on(onSubmit, () => true).on(onReset, () => true);
   $dirty.on($dirtyFields, () => true).on(onReset, () => false);
   $touched.on($touchedFields, () => true).on(onReset, () => false);
-
-  const fieldsResets = Object.keys($fields).map(
-    (fieldName) => $fields[fieldName].onReset,
-  );
 
   forward({
     from: onReset,

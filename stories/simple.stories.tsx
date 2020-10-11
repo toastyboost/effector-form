@@ -10,11 +10,6 @@ export default { title: 'Forms' };
 
 // model
 
-type Auth = {
-  login: string;
-  pass: string;
-};
-
 const submitForm = createEvent<void>();
 // const resetForm = createEvent<Auth | void>();
 
@@ -38,17 +33,17 @@ const fields = {
     initial: '',
     validator: passValidator,
     config: {
-      placeholder: 'Your password',
+      placeholder: '',
     },
   },
 };
 
-type Config = {
-  label?: string;
-  placeholder: string;
+type Auth = {
+  login: string;
+  pass: string;
 };
 
-const authForm = createForm<Auth, Config>({
+const authForm = createForm<Auth>({
   name: 'auth',
   fields,
   onSubmit: submitForm,
