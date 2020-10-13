@@ -11,42 +11,64 @@ import {
 import { createField, Field, FieldResult } from './createField';
 import { getKeys } from './lib/validators';
 
-type Fields<Context> = {
-  [P in keyof Context]: Field<Context[keyof Context]>;
+type Fields<Context, Config extends object = {}> = {
+  [Key in keyof Context]: Field<Context[Key], Config>;
 };
 
-type FieldsResult<Context> = {
-  [P in keyof Context]: FieldResult<Context[keyof Context]>;
+type FieldsResult<Context, Config = any> = {
+  [Key in keyof Context]: FieldResult<Context[Key], Config>;
 };
 
 export type Errors<T> = {
-  [P in keyof T]: null | string;
+  [Key in keyof T]: null | string;
 };
 
-export type Form<Context> = {
+export type Form<Value, Config extends {} = {}> = {
   name?: string;
-  fields: Fields<Context>;
+  fields: Fields<Value, Config>;
   onSubmit: Event<void>;
-  onReset?: Event<Context | void>;
+  onReset?: Event<Value | void>;
 };
 
-export type FormResult<T> = {
+type FormResult = {
   name: string;
-  $fields: FieldsResult<T>;
-  $values: Store<T>;
-  $errors: Store<Errors<T>>;
   $valid: Store<boolean>;
   $submited: Store<boolean>;
   $dirty: Store<boolean>;
   $touched: Store<boolean>;
 };
 
-export const createForm = <T>({
-  name = 'Form',
-  fields,
-  onSubmit = createEvent(`${name}Submit`),
-  onReset = createEvent(`${name}Reset`),
-}: Form<T>): FormResult<T> => {
+export function createForm<
+  C,
+  F extends { [key: string]: Field<any, C> }
+>(form: {
+  name?: string;
+  fields: F;
+  onSubmit: Event<void>;
+  onReset?: Event<
+    { [Key in keyof F]: F[Key] extends Field<infer T> ? T : never } | void
+  >;
+}): {
+  $fields: {
+    [Key in keyof F]: F[Key] extends Field<infer T, infer C>
+      ? FieldResult<T, C>
+      : never;
+  };
+  $values: Store<
+    {
+      [Key in keyof F]: F[Key] extends Field<infer T> ? T : never;
+    }
+  >;
+  $errors: {
+    [Key in keyof F]: string | null;
+  };
+} & FormResult {
+  const {
+    name = 'Form',
+    fields,
+    onSubmit = createEvent(`${name}Submit`),
+    onReset = createEvent(`${name}Reset`),
+  } = form;
   const $fields = Object.keys(fields).reduce((acc, fieldName) => {
     return {
       ...acc,
@@ -129,4 +151,4 @@ export const createForm = <T>({
     $dirty,
     $touched,
   };
-};
+}
