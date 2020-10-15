@@ -43,7 +43,7 @@ type Auth = {
   pass: string;
 };
 
-const authForm = createForm<Auth>({
+const authForm = createForm({
   name: 'auth',
   fields,
   onSubmit: submitForm,
