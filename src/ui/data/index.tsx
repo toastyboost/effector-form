@@ -9,9 +9,10 @@ type Data = {
     [key: string]: string;
   };
   conditions?: {
-    isValid: boolean;
-    isDirty: boolean;
-    isSubmited: boolean;
+    isValid?: boolean;
+    isDirty?: boolean;
+    isSubmited?: boolean;
+    isTouched?: boolean;
   };
   cols?: number[];
 };

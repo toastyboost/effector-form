@@ -92,7 +92,7 @@ export const fetchForm = () => {
               <Form.Item label="Last name">
                 <Input value={values.last_name} />
               </Form.Item>
-              <Button type="primary" onClick={() => submitForm()}>
+              <Button type="primary" onClick={() => submitForm()} disabled>
                 Submit
               </Button>
             </Form>

@@ -15,11 +15,6 @@ type Auth = {
 
 // model
 
-const resets: Auth = {
-  login: 'John',
-  pass: 'thepass',
-};
-
 const submitForm = createEvent<void>();
 const resetFields = createEvent<Auth | void>();
 
@@ -42,9 +37,13 @@ const authForm = createForm<Auth>({
 // view
 
 export const simpleForm = () => {
-  const { $values, $fields } = authForm;
+  const { $values, $fields, $valid, $submited, $dirty, $touched } = authForm;
 
   const values = useStore($values);
+  const isValid = useStore($valid);
+  const isDirty = useStore($dirty);
+  const isSubmited = useStore($submited);
+  const isTouched = useStore($touched);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     $fields.login.onChange(e.currentTarget.value);
@@ -72,14 +71,14 @@ export const simpleForm = () => {
             <Button type="primary" onClick={() => submitForm()}>
               Submit
             </Button>
-            &nbsp;
-            <Button type="dashed" onClick={() => resetFields(resets)}>
-              Reset
-            </Button>
           </Form>
         </Col>
       </Row>
-      <DataTable values={values} cols={[12, 0, 0]} />
+      <DataTable
+        values={values}
+        cols={[12, 0, 0]}
+        conditions={{ isValid, isDirty, isSubmited, isTouched }}
+      />
     </Space>
   );
 };
