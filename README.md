@@ -8,7 +8,7 @@ Build Effector models and React inputs with some help
 
 model.ts
 
-```TSX
+```TS
 import { createEvent, useStore } from 'effector';
 import { createForm } from 'effector-form';
 
@@ -38,7 +38,7 @@ const authForm = createForm<Login>({
 
 view.tsx
 
-```
+```TSX
 export const Input = () => {
   const { $values, $fields } = authForm;
 
