@@ -8,12 +8,12 @@ import { DataTable } from '../src/ui';
 
 export default { title: 'Forms' };
 
+// model
+
 type Auth = {
   login: string;
   pass: string;
 };
-
-// model
 
 const submitForm = createEvent<void>();
 const resetFields = createEvent<Auth | void>();
@@ -72,12 +72,16 @@ export const simpleForm = () => {
             <Button type="primary" onClick={() => submitForm()}>
               Submit
             </Button>
+            &nbsp;
+            <Button type="default" onClick={() => resetFields()}>
+              Reset
+            </Button>
           </Form>
         </Col>
       </Row>
       <DataTable
         values={values}
-        cols={[12, 0, 12]}
+        cols={[6, 0, 6]}
         conditions={{ isValid, isDirty, isSubmited, isTouched }}
       />
     </Space>

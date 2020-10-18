@@ -8,6 +8,8 @@ import { DataTable } from '../src/ui';
 
 export default { title: ' Forms' };
 
+// model
+
 type Resets = {
   name: string;
   surname: string;
@@ -38,6 +40,8 @@ const testForm = createForm<Resets>({
   onSubmit: submitForm,
   onReset: resetFields,
 });
+
+// veiw
 
 export const resetForm = () => {
   const { $values, $fields } = testForm;
