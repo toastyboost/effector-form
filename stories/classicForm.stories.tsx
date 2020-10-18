@@ -21,8 +21,8 @@ type Config = {
 // model
 
 const resets: Auth = {
-  login: '1',
-  pass: '2',
+  login: 'John',
+  pass: 'sexypass',
 };
 
 const submitForm = createEvent<void>();
@@ -91,6 +91,7 @@ export const simpleForm = () => {
               <Input
                 value={values.pass}
                 onChange={handlePassChange}
+                type="password"
                 placeholder={$fields.pass.config.placeholder}
               />
             </Form.Item>

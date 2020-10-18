@@ -9,53 +9,51 @@ Build Effector models for forms and inputs with helpers.
 model.ts
 
 ```
-import { createField, createForm } from 'effector-form';
+import { createEvent, useStore } from 'effector';
+import { createForm } from 'effector-form';
 
-export const loginField = createField({
+const submitForm = createEvent<void>();
+
+type Login = {
+  email: string;
+  pass: string;
+};
+
+const fields = {
+  email: {
+    name: 'email',
+    initial: 'mail@gmail.com'
+  },
+  pass: {
+    name: 'password'
+  }
+}
+
+const authForm = createForm<Login>({
   name: 'login',
+  fields,
+  onSubmit: submitForm,
 });
-
-export const passField = createField({
-  name: 'pass',
-});
-
-export const authForm = createForm({
-  name: 'auth',
-  fields: [nameField, passField],
-});
-
 ```
 
 view.tsx
 
 ```
-export const Input = (inputProps) => {
-  const { name, $value, $error, changed } = inputProps;
+export const Input = () => {
+  const { $values, $fields } = authForm;
 
-  const value = useStore($value);
-  const error = useStore($error);
+  const values = useStore($values);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    $fields.login.onChange(e.currentTarget.value);
+  };
 
   return (
-    <div>
-      <label>{name}</label>
-      <input onChange={changed} value={value} name={name} />
-      <div>{error && error}</div>
-    <div/>
+    <input onChange={onChange} value={values.login} />
   );
 };
 ```
 
-## Features
-
-- createInput - create input filed
-- createGroup - create checkbox field
-- createField - create custom fields
-- createForm - create form
-
 ## TODO
 
-- [ ] Add generics to field types
-- [ ] Add custom_data fields (boolean, object)
-- [ ] Handle stores in fieldsValidator
-- [ ] Analyze forms libs
-- [ ] Reset Fields throue form
+- [ ] Add examples
