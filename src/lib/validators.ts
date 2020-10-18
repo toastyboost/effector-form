@@ -1,7 +1,4 @@
-import { combine } from 'effector';
-import { InputResult } from '../createInput';
-import { GroupResult } from '../createGroup';
-import { FieldResult } from '../createField';
+
 
 export const loginValidator = (login: string) => {
   if (login.length === 0) {
@@ -20,12 +17,9 @@ export const passValidator = (password: string) => {
   return null;
 };
 
-export const fieldsValidator = <T>(
-  fields: (InputResult | GroupResult | FieldResult<T>)[],
-) => {
-  const allFields = fields.map(({ $error }) => $error);
-  return combine(allFields, (all) => all.every((value) => !value));
-};
+export function getKeys<T extends {}>(o: T): Array<keyof T> {
+  return <Array<keyof T>>Object.keys(o);
+}
 
 export function isObjectEmpty(obj: object) {
   return Object.getOwnPropertyNames(obj).length > 0;

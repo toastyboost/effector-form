@@ -1,57 +1,58 @@
-import {
-  createEvent,
-  createStore,
-  sample,
-  Event,
-  Store,
-  Unit,
-  is,
-} from 'effector';
+import { createEvent, createStore, Store, Event } from 'effector';
 
-export type FieldConfig<T> = {
-  name: string;
-  initialValue: T | Store<T>;
-  reset?: Unit<void>;
-  map?: (value: T) => T;
-  validator?: (value: T) => T | null;
+export type Field<Value, Config = any> = {
+  name?: string;
+  initial?: Value | string;
+  onReset?: Event<Value | void>;
+  onValidate?: (value: Value | string) => string | null;
+  map?: (value: Value | string) => Value;
+  config?: Config;
 };
 
-export type FieldResult<T> = {
+export type FieldResult<Value, Config> = {
   name: string;
-  $value: Store<T>;
-  $error: Store<T | null>;
-  $isTouched: Store<boolean>;
-  changed: Event<T>;
-  reset: Unit<void>;
+  $value: Store<Value>;
+  $error: Store<string | null>;
+  $touched: Store<boolean>;
+  onChange: Event<Value>;
+  onReset: Event<Value | void>;
+  config: Config;
 };
 
-export function createField<T>({
-  name,
-  initialValue,
-  reset = createEvent(`${name}Reset`),
-  map,
-  validator,
-}: FieldConfig<T>): FieldResult<T> {
-  const changed = createEvent<T>(`${name}Changed`);
-  const $isTouched = createStore(false, { name: `${name}Touched` });
+export const createField = <Value, Config>(field: Field<Value, Config>) => {
+  const {
+    name = 'Field',
+    initial = '',
+    onValidate,
+    onReset = createEvent<Value | void>(`${name}Reset`),
+    map,
+    config,
+  } = field;
+  const onChange = createEvent<Value>(`${name}Changed`);
 
-  const $initialValue = is.unit(initialValue)
-    ? initialValue
-    : createStore(initialValue, { name: `${name}Store` });
-
-  const $source = sample($initialValue);
-
-  const $value = $source.map(map ?? ((a) => a));
-  const $error = $source.map(validator ?? (() => null));
-
-  sample({
-    source: $initialValue,
-    clock: reset,
-    target: $source,
+  const $touched = createStore<boolean>(false, { name: `${name}Touched` });
+  const $initial = createStore<Value | string>(initial, {
+    name: `${name}Store`,
   });
 
-  $isTouched.on(changed, () => true);
-  $source.on(changed, (_state, payload) => payload);
+  const $source = $initial.on(onReset, (_, payload) => {
+    if (payload) return payload;
+    return '';
+  });
 
-  return { name, $value, $error, $isTouched, changed, reset };
-}
+  const $value = $source.map(map ?? ((a) => a));
+  const $error = $source.map(onValidate ?? (() => null));
+
+  $touched.on(onChange, () => true);
+  $source.on(onChange, (_, value) => value);
+
+  return {
+    name,
+    $value,
+    $error,
+    $touched,
+    onChange,
+    onReset,
+    config,
+  };
+};
