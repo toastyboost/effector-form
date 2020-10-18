@@ -2,12 +2,11 @@ import { createEvent, createStore, Store, Event } from 'effector';
 
 export type Field<Value, Config = any> = {
   name?: string;
-  initial: Value;
+  initial?: Value | string;
   onReset?: Event<Value | void>;
-  onValidate?: (value: Value) => string | null;
-  map?: (value: Value) => Value;
-  // how to use infer here
-  config: Config;
+  onValidate?: (value: Value | string) => string | null;
+  map?: (value: Value | string) => Value;
+  config?: Config;
 };
 
 export type FieldResult<Value, Config> = {
@@ -17,31 +16,28 @@ export type FieldResult<Value, Config> = {
   $touched: Store<boolean>;
   onChange: Event<Value>;
   onReset: Event<Value | void>;
-
   config: Config;
 };
 
-export const createField = <T, F extends Field<T>>(
-  field: F,
-): F extends Field<T, infer C> ? FieldResult<T, C> : never => {
+export const createField = <Value, Config>(field: Field<Value, Config>) => {
   const {
     name = 'Field',
-    initial,
+    initial = '',
     onValidate,
-    onReset = createEvent(`${name}Reset`),
+    onReset = createEvent<Value | void>(`${name}Reset`),
     map,
     config,
   } = field;
-  const onChange = createEvent<T>(`${name}Changed`);
+  const onChange = createEvent<Value>(`${name}Changed`);
 
   const $touched = createStore<boolean>(false, { name: `${name}Touched` });
-  const $initial = createStore<T>(initial, {
+  const $initial = createStore<Value | string>(initial, {
     name: `${name}Store`,
   });
 
   const $source = $initial.on(onReset, (_, payload) => {
     if (payload) return payload;
-    return initial;
+    return '';
   });
 
   const $value = $source.map(map ?? ((a) => a));

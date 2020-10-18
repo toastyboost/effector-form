@@ -6,75 +6,55 @@ import {
   merge,
   Event,
   Store,
+  sample,
 } from 'effector';
 
 import { createField, Field, FieldResult } from './createField';
 import { getKeys } from './lib/validators';
 
-type Fields<Context, Config extends object = {}> = {
-  [Key in keyof Context]: Field<Context[Key], Config>;
-};
-
-type FieldsResult<Context, Config = any> = {
-  [Key in keyof Context]: FieldResult<Context[Key], Config>;
-};
 
 export type Errors<T> = {
-  [Key in keyof T]: null | string;
+  [P in keyof T]: null | string;
 };
 
-export type Form<Value, Config extends {} = {}> = {
+type FieldsConfigs<Context, Config> = {
+  [P in keyof Context]: Field<Context[keyof Context], Config>
+}
+
+export type Form<Context, Config> = {
   name?: string;
-  fields: Fields<Value, Config>;
+  fields: FieldsConfigs<Context, Config>;
   onSubmit: Event<void>;
-  onReset?: Event<Value | void>;
+  onReset?: Event<Context | void>;
 };
 
-type FormResult = {
+type FieldsResult<Context, Config> = {
+  [P in keyof Context]: FieldResult<Context[keyof Context], Config>
+}
+
+export type FormResult<Context, Config> = {
   name: string;
+  $fields: FieldsResult<Context, Config>;
+  $values: Store<Context>;
+  $errors: Store<Errors<Context>>;
   $valid: Store<boolean>;
   $submited: Store<boolean>;
   $dirty: Store<boolean>;
   $touched: Store<boolean>;
 };
 
-export function createForm<
-  C,
-  F extends { [key: string]: Field<any, C> }
->(form: {
-  name?: string;
-  fields: F;
-  onSubmit: Event<void>;
-  onReset?: Event<
-    { [Key in keyof F]: F[Key] extends Field<infer T> ? T : never } | void
-  >;
-}): {
-  $fields: {
-    [Key in keyof F]: F[Key] extends Field<infer T, infer C>
-      ? FieldResult<T, C>
-      : never;
-  };
-  $values: Store<
-    {
-      [Key in keyof F]: F[Key] extends Field<infer T> ? T : never;
-    }
-  >;
-  $errors: {
-    [Key in keyof F]: string | null;
-  };
-} & FormResult {
-  const {
-    name = 'Form',
-    fields,
-    onSubmit = createEvent(`${name}Submit`),
-    onReset = createEvent(`${name}Reset`),
-  } = form;
-  const $fields = Object.keys(fields).reduce((acc, fieldName) => {
+export const createForm = <T, C = any>({
+  name = 'Form',
+  fields,
+  onSubmit = createEvent(`${name}Submit`),
+  onReset = createEvent(`${name}Reset`),
+}: Form<T, C>): FormResult<T, C> => {
+  const $fields = getKeys(fields).reduce((acc, fieldName) => {
     return {
       ...acc,
-      [fieldName]: createField<T>(fields[fieldName]),
+      [fieldName]: createField<T[keyof T], C>(fields[fieldName]),
     };
-  }, {} as FieldsResult<T>);
+  }, {}) as FieldsResult<T, C>;
 
   const $values = (combine(
     getKeys($fields).reduce(
@@ -96,7 +76,7 @@ export function createForm<
     ),
   ) as unknown) as Store<Errors<T>>;
 
-  const $touchedFields = merge(
+  const $touchedFields = merge<boolean>(
     getKeys($fields).map((fieldName) => $fields[fieldName].$touched),
   );
 
@@ -108,10 +88,12 @@ export function createForm<
     (fieldName) => $fields[fieldName].$error,
   );
 
-  // cant use getKeys here
-  const fieldsResets = Object.keys($fields).map(
-    (fieldName) => $fields[fieldName].onReset,
-  );
+  const fieldsResets = getKeys($fields).map(
+    (fieldName) => $fields[fieldName].onReset.prepend((field: T | void) => {
+      if (field) {
+        return field[fieldName]
+      }
+    }))
 
   const $valid = combine($validFields, (all) => all.every((e) => !e));
 
@@ -151,4 +133,4 @@ export function createForm<
     $dirty,
     $touched,
   };
-}
+};

@@ -1,6 +1,4 @@
-export function isObjectEmpty(obj: object) {
-  return Object.getOwnPropertyNames(obj).length > 0;
-}
+
 
 export const loginValidator = (login: string) => {
   if (login.length === 0) {
@@ -19,5 +17,10 @@ export const passValidator = (password: string) => {
   return null;
 };
 
-export const getKeys = <T extends {}>(o: T): Array<keyof T> =>
-  <Array<keyof T>>Object.keys(o);
+export function getKeys<T extends {}>(o: T): Array<keyof T> {
+  return <Array<keyof T>>Object.keys(o);
+}
+
+export function isObjectEmpty(obj: object) {
+  return Object.getOwnPropertyNames(obj).length > 0;
+}
