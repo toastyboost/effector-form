@@ -1,6 +1,6 @@
 # Effector Form
 
-Build Effector models for forms and inputs with helpers.
+Build Effector models and React inputs with some help
 
 [![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@master/badge/badge-storybook.svg)](https://toastyboost.github.io/effector-form/)
 
