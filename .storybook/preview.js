@@ -10,5 +10,5 @@ export const decorators = [
 ];
 
 export const parameters = {
-  controls: { expanded: true },
+  controls: { expanded: false },
 };

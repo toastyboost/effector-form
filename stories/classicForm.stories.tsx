@@ -21,6 +21,7 @@ const resetFields = createEvent<Auth | void>();
 const fields = {
   login: {
     name: 'login',
+    initial: 'mail@gmail.com',
   },
   pass: {
     name: 'pass',

@@ -56,7 +56,7 @@ const userFields = {
   },
 };
 
-const testForm = createForm<User>({
+const userForm = createForm<User>({
   name: 'user',
   fields: userFields,
   onSubmit: submitForm,
@@ -65,8 +65,8 @@ const testForm = createForm<User>({
 
 // veiw
 
-export const fetchForm = () => {
-  const { $values } = testForm;
+export const fetchedForm = () => {
+  const { $values } = userForm;
   const values = useStore($values);
   const pending = useStore(getUsers.pending);
 
