@@ -8,7 +8,7 @@ Build Effector models and React inputs with some help
 
 model.ts
 
-```
+```TSX
 import { createEvent, useStore } from 'effector';
 import { createForm } from 'effector-form';
 
