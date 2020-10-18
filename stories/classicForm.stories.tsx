@@ -77,7 +77,7 @@ export const simpleForm = () => {
       </Row>
       <DataTable
         values={values}
-        cols={[12, 0, 0]}
+        cols={[12, 0, 12]}
         conditions={{ isValid, isDirty, isSubmited, isTouched }}
       />
     </Space>
