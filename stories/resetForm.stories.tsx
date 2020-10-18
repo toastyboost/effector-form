@@ -15,9 +15,9 @@ type Resets = {
 };
 
 const submitForm = createEvent<void>();
-const resetForm = createEvent();
+const resetFields = createEvent();
 
-const resetFields = {
+const fields = {
   name: {
     name: 'fieldOne',
     initial: 'John',
@@ -34,12 +34,12 @@ const resetFields = {
 
 const testForm = createForm<Resets>({
   name: 'reset',
-  fields: resetFields,
+  fields,
   onSubmit: submitForm,
-  onReset: resetForm,
+  onReset: resetFields,
 });
 
-export const resetReset = () => {
+export const resetForm = () => {
   const { $values, $fields } = testForm;
 
   const values = useStore($values);
@@ -57,7 +57,7 @@ export const resetReset = () => {
   };
 
   return (
-    <Space size={16} direction="vertical">
+    <Space size={16} direction="vertical" style={{ width: '100%' }}>
       <Row gutter={16}>
         <Col span={24}>
           <Form layout="vertical">
@@ -70,13 +70,13 @@ export const resetReset = () => {
             <Form.Item label="Email">
               <Input onChange={handleFieldValueThree} value={values.age} />
             </Form.Item>
-            <Button onClick={() => resetForm()} type="primary">
+            <Button onClick={() => resetFields()} type="primary">
               Reset
             </Button>
           </Form>
         </Col>
       </Row>
-      <DataTable values={values} />
+      <DataTable values={values} cols={[12, 0, 0]} />
     </Space>
   );
 };

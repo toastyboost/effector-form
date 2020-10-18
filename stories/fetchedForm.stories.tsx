@@ -75,7 +75,7 @@ export const fetchForm = () => {
   }, []);
 
   return (
-    <Space size={16} direction="vertical">
+    <Space size={16} direction="vertical" style={{ width: '100%' }}>
       <Row gutter={16}>
         <Col span={24}>
           <Spin spinning={pending}>
@@ -99,7 +99,7 @@ export const fetchForm = () => {
           </Spin>
         </Col>
       </Row>
-      <DataTable values={values} />
+      <DataTable values={values} cols={[12, 0, 0]} />
     </Space>
   );
 };
