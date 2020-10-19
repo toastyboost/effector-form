@@ -6,7 +6,6 @@ import {
   merge,
   Event,
   Store,
-  sample,
 } from 'effector';
 
 import { createField, Field, FieldResult } from './createField';
@@ -24,8 +23,8 @@ type FieldsConfigs<Context, Config> = {
 export type Form<Context, Config> = {
   name?: string;
   fields: FieldsConfigs<Context, Config>;
-  onSubmit: Event<void>;
-  onReset?: Event<Context | void>;
+  submit: Event<void>;
+  reset?: Event<Context | void>;
 };
 
 type FieldsResult<Context, Config> = {
@@ -34,7 +33,7 @@ type FieldsResult<Context, Config> = {
 
 export type FormResult<Context, Config> = {
   name: string;
-  $fields: FieldsResult<Context, Config>;
+  inputs: FieldsResult<Context, Config>;
   $values: Store<Context>;
   $errors: Store<Errors<Context>>;
   $valid: Store<boolean>;
@@ -43,13 +42,13 @@ export type FormResult<Context, Config> = {
   $touched: Store<boolean>;
 };
 
-export const createForm = <T, C = any>({
+export const createForm = <T, C = unknown>({
   name = 'Form',
   fields,
-  onSubmit = createEvent(`${name}Submit`),
-  onReset = createEvent(`${name}Reset`),
+  submit: onSubmit = createEvent(`${name}Submit`),
+  reset: onReset = createEvent(`${name}Reset`),
 }: Form<T, C>): FormResult<T, C> => {
-  const $fields = getKeys(fields).reduce((acc, fieldName) => {
+  const inputs = getKeys(fields).reduce((acc, fieldName) => {
     return {
       ...acc,
       [fieldName]: createField<T[keyof T], C>(fields[fieldName]),
@@ -57,39 +56,39 @@ export const createForm = <T, C = any>({
   }, {}) as FieldsResult<T, C>;
 
   const $values = (combine(
-    getKeys($fields).reduce(
+    getKeys(inputs).reduce(
       (acc, fieldName) => ({
         ...acc,
-        [fieldName]: $fields[fieldName].$value,
+        [fieldName]: inputs[fieldName].$value,
       }),
       {} as T,
     ),
   ) as unknown) as Store<T>;
 
   const $errors = (combine(
-    getKeys($fields).reduce(
+    getKeys(inputs).reduce(
       (acc, fieldName) => ({
         ...acc,
-        [fieldName]: $fields[fieldName].$error,
+        [fieldName]: inputs[fieldName].$error,
       }),
       {} as Errors<T>,
     ),
   ) as unknown) as Store<Errors<T>>;
 
   const $touchedFields = merge<boolean>(
-    getKeys($fields).map((fieldName) => $fields[fieldName].$touched),
+    getKeys(inputs).map((fieldName) => inputs[fieldName].$touched),
   );
 
   const $dirtyFields = merge(
-    getKeys($fields).map((fieldName) => $fields[fieldName].onChange),
+    getKeys(inputs).map((fieldName) => inputs[fieldName].change),
   );
 
-  const $validFields = getKeys($fields).map(
-    (fieldName) => $fields[fieldName].$error,
+  const $validFields = getKeys(inputs).map(
+    (fieldName) => inputs[fieldName].$error,
   );
 
-  const fieldsResets = getKeys($fields).map(
-    (fieldName) => $fields[fieldName].onReset.prepend((field: T | void) => {
+  const fieldsResets = getKeys(inputs).map(
+    (fieldName) => inputs[fieldName].reset.prepend((field: T | void) => {
       if (field) {
         return field[fieldName]
       }
@@ -125,7 +124,7 @@ export const createForm = <T, C = any>({
 
   return {
     name,
-    $fields,
+    inputs,
     $values,
     $errors,
     $valid,

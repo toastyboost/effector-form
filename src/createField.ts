@@ -1,11 +1,11 @@
 import { createEvent, createStore, Store, Event } from 'effector';
 
-export type Field<Value, Config = any> = {
+export type Field<Value, Config = unknown> = {
   name?: string;
-  initial?: Value | string;
-  onReset?: Event<Value | void>;
-  onValidate?: (value: Value | string) => string | null;
-  map?: (value: Value | string) => Value;
+  initial: Value;
+  reset?: Event<Value | void>;
+  validate?: (value: Value) => string | null;
+  map?: (value: Value) => Value;
   config?: Config;
 };
 
@@ -14,45 +14,66 @@ export type FieldResult<Value, Config> = {
   $value: Store<Value>;
   $error: Store<string | null>;
   $touched: Store<boolean>;
-  onChange: Event<Value>;
-  onReset: Event<Value | void>;
-  config: Config;
+  change: Event<Value>;
+  reset: Event<Value | void>;
+  config: Config | undefined;
 };
 
-export const createField = <Value, Config>(field: Field<Value, Config>) => {
+export const createField = <Value, Config>(field: Field<Value, Config>): FieldResult<Value, Config> => {
   const {
     name = 'Field',
-    initial = '',
-    onValidate,
-    onReset = createEvent<Value | void>(`${name}Reset`),
+    initial,
+    reset = createEvent<Value | void>(`${name}Reset`),
+    validate,
     map,
     config,
   } = field;
-  const onChange = createEvent<Value>(`${name}Changed`);
+  const change = createEvent<Value>(`${name}Changed`);
 
   const $touched = createStore<boolean>(false, { name: `${name}Touched` });
-  const $initial = createStore<Value | string>(initial, {
+  const $initial = createStore<Value>(initial, {
     name: `${name}Store`,
   });
 
-  const $source = $initial.on(onReset, (_, payload) => {
-    if (payload) return payload;
-    return '';
-  });
+  const $source = $initial
+    .on(change, (_, value) => value)
+    .on(reset, (_, payload) => {
+
+      if (payload) return payload;
+
+      if (typeof payload === 'undefined') {
+
+        if (Array.isArray(initial)) {
+          return [] as unknown as Value;
+        }
+
+        switch (typeof initial) {
+          case 'number':
+            return 0 as unknown as Value;
+          case 'boolean':
+            return false as unknown as Value;
+          case 'object':
+            return null as unknown as Value;
+          default:
+            return '' as unknown as Value;
+        }
+      }
+
+      return initial;
+    });
 
   const $value = $source.map(map ?? ((a) => a));
-  const $error = $source.map(onValidate ?? (() => null));
+  const $error = $source.map(validate ?? (() => null));
 
-  $touched.on(onChange, () => true);
-  $source.on(onChange, (_, value) => value);
+  $touched.on(change, () => true);
 
   return {
     name,
     $value,
     $error,
     $touched,
-    onChange,
-    onReset,
+    change,
+    reset,
     config,
   };
 };

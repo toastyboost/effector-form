@@ -15,8 +15,8 @@ type Auth = {
   pass: string;
 };
 
-const submitForm = createEvent<void>();
-const resetFields = createEvent<Auth | void>();
+const submit = createEvent<void>();
+const reset = createEvent<Auth | void>();
 
 const fields = {
   login: {
@@ -25,20 +25,21 @@ const fields = {
   },
   pass: {
     name: 'pass',
+    initial: '',
   },
 };
 
 const authForm = createForm<Auth>({
   name: 'reset',
   fields,
-  onSubmit: submitForm,
-  onReset: resetFields,
+  submit,
+  reset,
 });
 
 // view
 
 export const simpleForm = () => {
-  const { $values, $fields, $valid, $submited, $dirty, $touched } = authForm;
+  const { $values, inputs, $valid, $submited, $dirty, $touched } = authForm;
 
   const values = useStore($values);
   const isValid = useStore($valid);
@@ -47,11 +48,11 @@ export const simpleForm = () => {
   const isTouched = useStore($touched);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    $fields.login.onChange(e.currentTarget.value);
+    inputs.login.change(e.currentTarget.value);
   };
 
   const handlePassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    $fields.pass.onChange(e.currentTarget.value);
+    inputs.pass.change(e.currentTarget.value);
   };
 
   return (
@@ -69,12 +70,12 @@ export const simpleForm = () => {
                 type="password"
               />
             </Form.Item>
-            <Button type="primary" onClick={() => submitForm()}>
+            <Button type="primary" onClick={() => submit()}>
               Submit
             </Button>
             &nbsp;
-            <Button type="default" onClick={() => resetFields()}>
-              Reset
+            <Button type="default" onClick={() => reset()}>
+              Clear
             </Button>
           </Form>
         </Col>

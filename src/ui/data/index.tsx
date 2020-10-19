@@ -3,10 +3,10 @@ import { Card, Col, Row } from 'antd';
 
 type Data = {
   values?: {
-    [key: string]: string;
+    [key: string]: string | boolean | string[] | number;
   };
   errors?: {
-    [key: string]: string;
+    [key: string]: string | boolean | string[] | number;
   };
   conditions?: {
     isValid?: boolean;

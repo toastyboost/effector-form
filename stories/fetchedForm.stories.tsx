@@ -44,23 +44,27 @@ sample({
 const userFields = {
   id: {
     name: 'ID',
+    initial: '',
   },
   email: {
     name: 'Email',
+    initial: '',
   },
   first_name: {
     name: 'firstName',
+    initial: '',
   },
   last_name: {
     name: 'lastName',
+    initial: '',
   },
 };
 
 const userForm = createForm<User>({
   name: 'user',
   fields: userFields,
-  onSubmit: submitForm,
-  onReset: resetForm,
+  submit: submitForm,
+  reset: resetForm,
 });
 
 // veiw
