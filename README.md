@@ -45,7 +45,7 @@ export const Input = () => {
   const values = useStore($values);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    inputs.login.onChange(e.currentTarget.value);
+    inputs.login.change(e.currentTarget.value);
   };
 
   return (
