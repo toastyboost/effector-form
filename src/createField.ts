@@ -47,7 +47,9 @@ export const createField = <Value, Config>(field: Field<Value, Config>): FieldRe
           return [] as unknown as Value;
         }
 
-        switch (typeof initial) {
+        const type = typeof initial;
+
+        switch (type) {
           case 'number':
             return 0 as unknown as Value;
           case 'boolean':

@@ -12,7 +12,7 @@ model.ts
 import { createEvent, useStore } from 'effector';
 import { createForm } from 'effector-form';
 
-const submitForm = createEvent<void>();
+const submit = createEvent<void>();
 
 type Login = {
   email: string;
@@ -32,7 +32,7 @@ const fields = {
 const authForm = createForm<Login>({
   name: 'login',
   fields,
-  onSubmit: submitForm,
+  submit,
 });
 ```
 
@@ -40,12 +40,12 @@ view.tsx
 
 ```TSX
 export const Input = () => {
-  const { $values, $fields } = authForm;
+  const { $values, inputs } = authForm;
 
   const values = useStore($values);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    $fields.login.onChange(e.currentTarget.value);
+    inputs.login.onChange(e.currentTarget.value);
   };
 
   return (

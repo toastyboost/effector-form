@@ -45,8 +45,8 @@ export type FormResult<Context, Config> = {
 export const createForm = <T, C = unknown>({
   name = 'Form',
   fields,
-  submit: onSubmit = createEvent(`${name}Submit`),
-  reset: onReset = createEvent(`${name}Reset`),
+  submit = createEvent(`${name}Submit`),
+  reset = createEvent(`${name}Reset`),
 }: Form<T, C>): FormResult<T, C> => {
   const inputs = getKeys(fields).reduce((acc, fieldName) => {
     return {
@@ -108,12 +108,12 @@ export const createForm = <T, C = unknown>({
     name: `${name}Submit`,
   });
 
-  $submited.on(onSubmit, () => true).on(onReset, () => true);
-  $dirty.on($dirtyFields, () => true).on(onReset, () => false);
-  $touched.on($touchedFields, () => true).on(onReset, () => false);
+  $submited.on(submit, () => true).on(reset, () => true);
+  $dirty.on($dirtyFields, () => true).on(reset, () => false);
+  $touched.on($touchedFields, () => true).on(reset, () => false);
 
   forward({
-    from: onReset,
+    from: reset,
     to: fieldsResets,
   });
 
