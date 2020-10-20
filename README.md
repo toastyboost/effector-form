@@ -57,3 +57,5 @@ export const Input = () => {
 ## TODO
 
 - [ ] Add examples
+- [ ] Add API to readme
+- [ ] Fix problem with mutliple types in input
