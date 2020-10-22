@@ -4,7 +4,7 @@ import { Switch as AntSwitch, Form } from 'antd';
 import { Event } from 'effector';
 
 type ToggleProps = {
-  change: Event<string | number | boolean | string[]>;
+  change: Event<boolean>;
   value: boolean;
   label?: string;
 };

@@ -4,7 +4,7 @@ import { InputNumber, Form } from 'antd';
 import { Event } from 'effector';
 
 type InputProps = {
-  change: Event<string | number | boolean | string[]>;
+  change: Event<number>;
   value: number;
   label?: string;
 };

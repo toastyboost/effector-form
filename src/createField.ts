@@ -23,7 +23,7 @@ export const createField = <Value, Config>(field: Field<Value, Config>): FieldRe
   const {
     name = 'Field',
     initial,
-    reset = createEvent<Value | void>(`${name}Reset`),
+    reset = createEvent(`${name}Reset`),
     validate,
     map,
     config,

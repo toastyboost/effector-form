@@ -10,7 +10,7 @@ type Value = string[];
 type InputProps = {
   initial?: Value;
   values: Value;
-  change: Event<string | number | boolean | Value>;
+  change: Event<Value>;
   label?: string;
 };
 

@@ -48,6 +48,7 @@ export const createForm = <T, C = unknown>({
   submit = createEvent(`${name}Submit`),
   reset = createEvent(`${name}Reset`),
 }: Form<T, C>): FormResult<T, C> => {
+
   const inputs = getKeys(fields).reduce((acc, fieldName) => {
     return {
       ...acc,
