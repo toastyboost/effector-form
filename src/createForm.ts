@@ -17,7 +17,7 @@ export type Errors<T> = {
 };
 
 type FieldsConfigs<Context, Config> = {
-  [P in keyof Context]: Field<Context[keyof Context], Config>
+  [Key in keyof Context]: Field<Context[keyof Context], Config>
 }
 
 export type Form<Context, Config> = {
@@ -28,7 +28,7 @@ export type Form<Context, Config> = {
 };
 
 type FieldsResult<Context, Config> = {
-  [P in keyof Context]: FieldResult<Context[keyof Context], Config>
+  [Key in keyof Context]: FieldResult<Context[Key], Config>
 }
 
 export type FormResult<Context, Config> = {
@@ -42,19 +42,19 @@ export type FormResult<Context, Config> = {
   $touched: Store<boolean>;
 };
 
-export const createForm = <T, C = unknown>({
+export const createForm = <Context, Config = unknown>({
   name = 'Form',
   fields,
   submit = createEvent(`${name}Submit`),
   reset = createEvent(`${name}Reset`),
-}: Form<T, C>): FormResult<T, C> => {
+}: Form<Context, Config>): FormResult<Context, Config> => {
 
   const inputs = getKeys(fields).reduce((acc, fieldName) => {
     return {
       ...acc,
-      [fieldName]: createField<T[keyof T], C>(fields[fieldName]),
+      [fieldName]: createField<Context[keyof Context], Config>(fields[fieldName]),
     };
-  }, {}) as FieldsResult<T, C>;
+  }, {}) as FieldsResult<Context, Config>;
 
   const $values = (combine(
     getKeys(inputs).reduce(
@@ -62,9 +62,9 @@ export const createForm = <T, C = unknown>({
         ...acc,
         [fieldName]: inputs[fieldName].$value,
       }),
-      {} as T,
+      {} as Context,
     ),
-  ) as unknown) as Store<T>;
+  ) as unknown) as Store<Context>;
 
   const $errors = (combine(
     getKeys(inputs).reduce(
@@ -72,9 +72,9 @@ export const createForm = <T, C = unknown>({
         ...acc,
         [fieldName]: inputs[fieldName].$error,
       }),
-      {} as Errors<T>,
+      {} as Errors<Context>,
     ),
-  ) as unknown) as Store<Errors<T>>;
+  ) as unknown) as Store<Errors<Context>>;
 
   const $touchedFields = merge<boolean>(
     getKeys(inputs).map((fieldName) => inputs[fieldName].$touched),
@@ -89,7 +89,7 @@ export const createForm = <T, C = unknown>({
   );
 
   const fieldsResets = getKeys(inputs).map(
-    (fieldName) => inputs[fieldName].reset.prepend((field: T | void) => {
+    (fieldName) => inputs[fieldName].reset.prepend((field: Context | void) => {
       if (field) {
         return field[fieldName]
       }
