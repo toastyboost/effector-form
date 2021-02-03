@@ -2,7 +2,7 @@ import { createEvent, createStore, Store, Event } from 'effector';
 
 export type Field<Value, Config = unknown> = {
   name?: string;
-  initial: Value;
+  initial?: Value;
   reset?: Event<Value | void>;
   validate?: (value: Value) => string | null;
   map?: (value: Value) => Value;

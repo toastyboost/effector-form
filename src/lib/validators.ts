@@ -26,3 +26,4 @@ export function getKeys<T extends Record<string, unknown>>(o: T): Array<keyof T>
 export function isObjectEmpty(obj: Record<string, unknown>): boolean {
   return Object.getOwnPropertyNames(obj).length > 0;
 }
+
